@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 const Container = styled.div`
 width: 468px;
-height: 786px;
+height: 886px;
 outline: 3px solid black;
 display: flex;
 flex-direction: column;
@@ -60,7 +60,8 @@ button:disabled {
 `
 
 const InputDiv = styled.div`
-display: flex;
+  display: flex;
+  flex-direction: column;
   position: relative;
   width: 100%;
 
@@ -72,7 +73,6 @@ display: flex;
   }
 
   input {
-    width: 100%;
     height: 40px;
     border-radius: 20px;
     padding: 10px 10px 10px 50px;
@@ -139,15 +139,25 @@ img {
 
 const Login = () => {
 
-  const [enableClick, setEnableClick] = useState(false)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [login, setLogin] = useState(false)
+  const [passwordMatch, setPasswordMatch] = useState(true)
 
-  const handleSubmit = () => {
-    return (e) => {
-      e.preventDefault()
-      console.log("submitted")
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent form from submitting traditionally
+    if (password !== confirmPassword) {
+      setPasswordMatch(false); // Show error if passwords do not match
+      return; // Stop the submission process
     }
-  }
+    console.log("Submitted"); // Placeholder for submission logic
+    setPasswordMatch(true); // Optional: reset or confirm password match state
+  };
+  
+
+  
 
   return (
     <Container>
@@ -156,24 +166,25 @@ const Login = () => {
         <h1>{login ? "用戶註冊": "用戶登入"}</h1>
         <p>填寫您的個人資訊</p>
       </Header>
-      <InputForm onClick={handleSubmit()}>
+      <InputForm onSubmit={handleSubmit}>
         <InputDiv>
-          <input type="email" placeholder="電郵"></input>
+          <input type="email" placeholder="電郵" onChange={(e) => setEmail(e.target.value)}></input>
           <img src="../../public/email.png" alt="email" />
         </InputDiv>
         <InputDiv>
-          <input type="password" placeholder="密碼" />
+          <input type="password" placeholder="密碼" onChange={(e) => setPassword(e.target.value)}/>
           <img src="../../public/password.png" alt="password" />
         </InputDiv>
-        <InputDiv>
-          <input type="password" placeholder="重新輸入密碼" />
+       { login ? <InputDiv>
+          <input type="password" placeholder="重新輸入密碼" onChange={(e) => setConfirmPassword(e.target.value)}/>
           <img src="../../public/password.png" alt="password" />
-        </InputDiv>
+          {!passwordMatch ? <p>password incorrect</p> : null}
+        </InputDiv> : null}
         {login ? <TermsDiv>
-          <input type="checkbox" id="termsAndService" onChange={()=>setEnableClick((prev)=>!prev)}/>
+          <input type="checkbox" id="termsAndService" onChange={(e) => setTermsAccepted(e.target.checked)}/>
           <label htmlFor="termsAndService" style={{ fontSize: 13 }}>我已閱讀並同意條款</label>
         </TermsDiv> : null}
-        <button type="submit" disabled={!enableClick && login} >下一步</button>
+        <button type="submit" disabled={!(email && password && confirmPassword && termsAccepted)}>{login ? "註冊" : "登入"}</button>
       </InputForm>
       <ToLogin >已經有帳號了？<a href="#" style={{ fontWeight: 800, color: 'black' }} onClick={()=>setLogin((prev)=>!prev)}>{login ? "登入" : "註冊"}</a></ToLogin>
       <CustomLine></CustomLine>

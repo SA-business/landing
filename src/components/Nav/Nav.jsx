@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import { NavLink } from 'react-router-dom'
 
 const Container = styled.div`
 width: 100%;
@@ -7,17 +8,15 @@ height: 80px;
 position: fixed;
 top: 0;
 left: 0;
-background-color: #a1dee0;
+background-color: #ffffff;
 display: flex;
-justify-content: space-between;
+justify-content: space-around;
 align-items: center;
 z-index: 100;
 padding: 10px 20px;
 `
 
 const LogoContainer = styled.div`
-
-background-color: #922626;
 display: flex;
 align-items: center;
 gap: 30px;
@@ -25,13 +24,12 @@ padding: 20px;
 
 p {
     font-size: 20px;
-    color: white;
+    color: #000000;
 }
 
 img {
-    width: 80px;
     height: 50px;
-    border: 1px solid black;
+    object-fit: cover;
 }
 `
 
@@ -47,32 +45,61 @@ list-style: none;
 const NavItem = styled.li`
 padding: 20px;
 font-size: 20px;
-color: white;
+color: #000000;
 text-decoration: none;
 margin: 0 20px;
 cursor: pointer;
+`
 
-&:hover {
-    background-color: black;
+const LoginButton = styled.button`
+padding: 10px 20px;
+border-radius: 20px;
+background-color: #d6d6d6;
+color: white;
+font-size: 20px;
+border: none;
+cursor: pointer;
+`
+
+const StyledNavLink = styled(NavLink)`
+text-decoration: none;
+color: #000000;
+
+&.active {
+    background-color: #e0e0e0;
+    border-radius: 20px;
 }
 `
 
 
+
+
 const Nav = () => {
+
+    const [highlight, setHightlight] = useState("")
+    const handleHighlight = (section) => {
+        setHighlight(section);
+      };
+
     return (
         <Container>
             <LogoContainer>
-                <img />
-                <p>Logo</p>
+                <img src='../../loginIcon.png'/>
+                <p>Internship</p>
             </LogoContainer>
 
             <NavItems>
-                <NavItem href="#">Home</NavItem>
-                <NavItem href="#">About</NavItem>
-                <NavItem href="#">Services</NavItem>
-                <NavItem href="#">Contact</NavItem>
-                <NavItem href="#">Profile</NavItem>
+            <StyledNavLink to="/" activeclassname="active-link" onClick={()=> setHightlight("home")}
+            ><NavItem>Home</NavItem></StyledNavLink>
+            <StyledNavLink to="/about" activeclassname="active-link" onClick={()=> setHightlight("about")}
+            ><NavItem>About</NavItem></StyledNavLink>
+            <StyledNavLink to="/service" activeclassname="active-link" onClick={()=> setHightlight("service")}
+            ><NavItem>Service</NavItem></StyledNavLink>
+            <StyledNavLink to="/profile" activeclassname="active-link" onClick={()=> setHightlight("profile")}
+            ><NavItem>Profile</NavItem></StyledNavLink>
             </NavItems>
+
+            <StyledNavLink to="/login" activeclassname="active-link" onClick={()=> setHightlight("login")}><LoginButton>Login</LoginButton></StyledNavLink>
             
         </Container>
     )
