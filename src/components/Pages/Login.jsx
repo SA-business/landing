@@ -1,5 +1,29 @@
-import styled from 'styled-components'
+import styled, {keyframes} from 'styled-components'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+const slideIn = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0); 
+  }
+`;
+
+const slideOut = keyframes`
+  0% {
+    opacity: 1;
+    transform: translateY(0); 
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px); 
+  }
+`;
+
 
 const Container = styled.div`
 width: 468px;
@@ -12,6 +36,7 @@ justify-content: center;
 padding: 20px;
 border-radius: 50px;
 gap: 20px;
+
 `
 const Header = styled.div`
 display: flex;
@@ -64,6 +89,8 @@ const InputDiv = styled.div`
   flex-direction: column;
   position: relative;
   width: 100%;
+  
+
 
   img {
     position: absolute;
@@ -77,7 +104,7 @@ const InputDiv = styled.div`
     border-radius: 20px;
     padding: 10px 10px 10px 50px;
     font-size: 20px;
-  
+   
     
 }
 
@@ -137,8 +164,9 @@ img {
 
 
 
-const Login = () => {
 
+const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -148,22 +176,40 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault(); // Prevent form from submitting traditionally
-    if (password !== confirmPassword) {
-      setPasswordMatch(false); // Show error if passwords do not match
-      return; // Stop the submission process
+    if (!login) {
+      console.log("login")
+      navigate('/home')
     }
-    console.log("Submitted"); // Placeholder for submission logic
-    setPasswordMatch(true); // Optional: reset or confirm password match state
+    else {
+      if (password !== confirmPassword) {
+        setPasswordMatch(false); // Show error if passwords do not match
+        return; // Stop the submission process
+      }
+      console.log("register"); // Placeholder for submission logic
+      navigate('/profile')
+    }
   };
-  
 
-  
+
+
+
+  const loginDisable = () => {
+    if (!login) {
+      return !(email && password);
+    } else {
+      return !(email && password && confirmPassword && termsAccepted);
+    }
+  };
+
+
+
+
 
   return (
     <Container>
       <Header>
         <img src="../../public/loginIcon.png" alt="loginIcon" />
-        <h1>{login ? "用戶註冊": "用戶登入"}</h1>
+        <h1>{login ? "用戶註冊" : "用戶登入"}</h1>
         <p>填寫您的個人資訊</p>
       </Header>
       <InputForm onSubmit={handleSubmit}>
@@ -172,30 +218,30 @@ const Login = () => {
           <img src="../../public/email.png" alt="email" />
         </InputDiv>
         <InputDiv>
-          <input type="password" placeholder="密碼" onChange={(e) => setPassword(e.target.value)}/>
+          <input type="password" placeholder="密碼" onChange={(e) => setPassword(e.target.value)} />
           <img src="../../public/password.png" alt="password" />
         </InputDiv>
-       { login ? <InputDiv>
-          <input type="password" placeholder="重新輸入密碼" onChange={(e) => setConfirmPassword(e.target.value)}/>
+        {login ? <InputDiv>
+          <input  type="password" placeholder="重新輸入密碼" onChange={(e) => setConfirmPassword(e.target.value)} />
           <img src="../../public/password.png" alt="password" />
-          {!passwordMatch ? <p>password incorrect</p> : null}
-        </InputDiv> : null}
-        {login ? <TermsDiv>
-          <input type="checkbox" id="termsAndService" onChange={(e) => setTermsAccepted(e.target.checked)}/>
+          {!passwordMatch ? <p>password mismatch</p> : null}
+        </InputDiv> : <p>Forgot password</p>}
+        {login ? <TermsDiv >
+          <input  type="checkbox" id="termsAndService" onChange={(e) => setTermsAccepted(e.target.checked)} />
           <label htmlFor="termsAndService" style={{ fontSize: 13 }}>我已閱讀並同意條款</label>
         </TermsDiv> : null}
-        <button type="submit" disabled={!(email && password && confirmPassword && termsAccepted)}>{login ? "註冊" : "登入"}</button>
+        <button type="submit" disabled={loginDisable()}>{login ? "註冊" : "登入"}</button>
       </InputForm>
-      <ToLogin >已經有帳號了？<a href="#" style={{ fontWeight: 800, color: 'black' }} onClick={()=>setLogin((prev)=>!prev)}>{login ? "登入" : "註冊"}</a></ToLogin>
+      <ToLogin >已經有帳號了？<a href="#" style={{ fontWeight: 800, color: 'black' }} onClick={() => setLogin((prev) => !prev)}>{login ? "登入" : "註冊"}</a></ToLogin>
       <CustomLine></CustomLine>
 
-      <ButtonDiv> 
-      <button>使用 Google 登入</button>
-      <img src="../../public/google.png" alt="" />
-      </ButtonDiv>  
-      <ButtonDiv>  
-      <button>使用 Facebook 登入</button>
-      <img src="../../public/facebook.png" alt="" />
+      <ButtonDiv>
+        <button>使用 Google 登入</button>
+        <img src="../../public/google.png" alt="" />
+      </ButtonDiv>
+      <ButtonDiv>
+        <button>使用 Facebook 登入</button>
+        <img src="../../public/facebook.png" alt="" />
       </ButtonDiv>
 
 
