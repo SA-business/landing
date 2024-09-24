@@ -7,6 +7,7 @@ import Profile from './components/pages/Profile'
 import Nav from './components/Nav/Nav'
 import Service from './components/pages/Service'
 import About from './components/Pages/About'
+import Notification from './components/notification/Notification'
 
 const Container = styled.div`
 width:100%;
@@ -16,6 +17,7 @@ justify-content: center;
 align-items: center;
 `
 const App = () => {
+
 
   return (
     <Router>
@@ -28,6 +30,7 @@ const App = () => {
         <Route path='/service' element={<Service />} />
         <Route path='/about' element={<About />} />
         </Routes>
+        <Notification />
       </Container>
     </Router>
   )

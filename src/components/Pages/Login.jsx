@@ -1,6 +1,8 @@
 import styled, {keyframes} from 'styled-components'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const slideIn = keyframes`
   0% {
@@ -174,19 +176,62 @@ const Login = () => {
   const [login, setLogin] = useState(false)
   const [passwordMatch, setPasswordMatch] = useState(true)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent form from submitting traditionally
     if (!login) {
-      console.log("login")
-      navigate('/home')
+      console.log("begin login")
+      try {
+        fetch('http://localhost:3000/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        })
+        .then((res) => {
+          if (res.ok) {
+            toast.success('登入成功');
+          } else {
+            toast.error('登入失敗');
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+      } catch (error) {
+        console.error('Unexpected Error:', error);
+      }
+      
     }
     else {
       if (password !== confirmPassword) {
         setPasswordMatch(false); // Show error if passwords do not match
+        toast.error('密碼不一致')
         return; // Stop the submission process
       }
-      console.log("register"); // Placeholder for submission logic
-      navigate('/profile')
+      console.log("begin register"); // Placeholder for submission logic
+      try {
+        fetch('http://localhost:3000/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        })
+        .then((res) => {
+          if (res.ok) {
+            toast.success('註冊成功');
+          } else {
+            toast.error('註冊失敗');
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+      }
+      catch (error) {
+        console.error('Unexpected Error:', error);
+      }
     }
   };
 

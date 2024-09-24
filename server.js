@@ -4,8 +4,12 @@ import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
+import cors from 'cors';
 dotenv.config();
 const app = express();
+
+app.use(cors());
+
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
@@ -60,4 +64,8 @@ app.post('/api/login', async (req, res) => {
         console.error('Failed to retrieve users:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
+})
+
+app.get('*', (req, res) => {
+    res.status(404).json({ error: 'Not found' });
 })
