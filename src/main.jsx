@@ -11,9 +11,6 @@ console.log(clientId)
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    
-  
     <App />
-  
   </StrictMode>,
 )

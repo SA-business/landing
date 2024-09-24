@@ -1,8 +1,9 @@
-import styled, {keyframes} from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import Modal from '../Modal popup/Modal'
 
 const slideIn = keyframes`
   0% {
@@ -163,9 +164,18 @@ img {
 }
 `
 
+const ForgetPassword = styled.button`
+font-size: 13px;
+outline: none;
+border: none;
+padding: 20px;
+cursor: pointer;
+
+`
 
 
 
+// '登入失敗'
 
 const Login = () => {
   const navigate = useNavigate();
@@ -174,7 +184,6 @@ const Login = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [login, setLogin] = useState(false)
-  const [passwordMatch, setPasswordMatch] = useState(true)
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent form from submitting traditionally
@@ -188,28 +197,30 @@ const Login = () => {
           },
           body: JSON.stringify({ email, password }),
         })
-        .then((res) => {
-          if (res.ok) {
-            toast.success('登入成功');
-          } else {
-            toast.error('登入失敗');
-          }
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
+          .then((res) => {
+            if (res.ok) {
+              toast.success('登入成功');
+            } else {
+              res.json().then((res) => {
+                toast.error(res.error);
+              });
+            }
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
       } catch (error) {
         console.error('Unexpected Error:', error);
       }
-      
+
     }
     else {
       if (password !== confirmPassword) {
-        setPasswordMatch(false); // Show error if passwords do not match
+        setPasswordMatch(false);
         toast.error('密碼不一致')
-        return; // Stop the submission process
+        return;
       }
-      console.log("begin register"); // Placeholder for submission logic
+      console.log("begin register");
       try {
         fetch('http://localhost:3000/api/register', {
           method: 'POST',
@@ -218,16 +229,18 @@ const Login = () => {
           },
           body: JSON.stringify({ email, password }),
         })
-        .then((res) => {
-          if (res.ok) {
-            toast.success('註冊成功');
-          } else {
-            toast.error('註冊失敗');
-          }
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
+          .then((res) => {
+            if (res.ok) {
+              toast.success('註冊成功');
+            } else {
+              res.json().then((res) => {
+                toast.error(res.error);
+              });
+            }
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
       }
       catch (error) {
         console.error('Unexpected Error:', error);
@@ -246,51 +259,98 @@ const Login = () => {
     }
   };
 
+  const toggleLogin = () => {
+    setLogin((prev) => !prev);
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+  }
+
+  const [showModal, setShowModal] = useState(false)
+  const closeModal = () => {
+    setShowModal(false)
+  }
+
+  const recoverPassword = () => {
+    fetch('http://localhost:3000/api/recover', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          toast.success('請查看您的電郵');
+        } else {
+          res.json().then((res) => {
+            toast.error(res.error);
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+
+
+
 
 
 
 
   return (
+    <>
     <Container>
       <Header>
-        <img src="../../public/loginIcon.png" alt="loginIcon" />
+        <img src="./loginIcon.png" alt="loginIcon" />
         <h1>{login ? "用戶註冊" : "用戶登入"}</h1>
         <p>填寫您的個人資訊</p>
       </Header>
+
       <InputForm onSubmit={handleSubmit}>
         <InputDiv>
-          <input type="email" placeholder="電郵" onChange={(e) => setEmail(e.target.value)}></input>
-          <img src="../../public/email.png" alt="email" />
+          <input type="email" value={email} placeholder="電郵" onChange={(e) => setEmail(e.target.value)} required></input>
+          <img src="./email.png" alt="email" />
         </InputDiv>
         <InputDiv>
-          <input type="password" placeholder="密碼" onChange={(e) => setPassword(e.target.value)} />
-          <img src="../../public/password.png" alt="password" />
+          <input type="password" value={password} placeholder="密碼" onChange={(e) => setPassword(e.target.value)} required min="8" />
+          <img src="./password.png" alt="password" />
         </InputDiv>
         {login ? <InputDiv>
-          <input  type="password" placeholder="重新輸入密碼" onChange={(e) => setConfirmPassword(e.target.value)} />
-          <img src="../../public/password.png" alt="password" />
-          {!passwordMatch ? <p>password mismatch</p> : null}
-        </InputDiv> : <p>Forgot password</p>}
+          <input type="password" value={confirmPassword} placeholder="重新輸入密碼" onChange={(e) => setConfirmPassword(e.target.value)} />
+          <img src="./password.png" alt="password" />
+        </InputDiv> : <ForgetPassword type="button" onClick={()=>setShowModal(true)}>Forgot password</ForgetPassword>}
         {login ? <TermsDiv >
-          <input  type="checkbox" id="termsAndService" onChange={(e) => setTermsAccepted(e.target.checked)} />
+          <input type="checkbox" id="termsAndService" onChange={(e) => setTermsAccepted(e.target.checked)} />
           <label htmlFor="termsAndService" style={{ fontSize: 13 }}>我已閱讀並同意條款</label>
         </TermsDiv> : null}
         <button type="submit" disabled={loginDisable()}>{login ? "註冊" : "登入"}</button>
       </InputForm>
-      <ToLogin >已經有帳號了？<a href="#" style={{ fontWeight: 800, color: 'black' }} onClick={() => setLogin((prev) => !prev)}>{login ? "登入" : "註冊"}</a></ToLogin>
+
+      <ToLogin >已經有帳號了？<a href="#" style={{ fontWeight: 800, color: 'black' }} onClick={toggleLogin}>{login ? "登入" : "註冊"}</a></ToLogin>
       <CustomLine></CustomLine>
 
       <ButtonDiv>
         <button>使用 Google 登入</button>
-        <img src="../../public/google.png" alt="" />
+        <img src="./google.png" alt="" />
       </ButtonDiv>
+
       <ButtonDiv>
         <button>使用 Facebook 登入</button>
-        <img src="../../public/facebook.png" alt="" />
+        <img src="./facebook.png" alt="" />
       </ButtonDiv>
-
-
     </Container>
+    {showModal && <Modal onClose={closeModal}>
+      <h2>Input your email</h2>
+      <form>
+      <input/>
+      <button onClick={()=>recoverPassword()}>recover</button>
+      </form>
+      
+      
+      </Modal>}
+    </>
   )
 }
 
