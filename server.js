@@ -29,7 +29,7 @@ connectToDb((err) => {
     }
 });
 
-sendEmail('recipient@example.com', 'Hello from Nodemailer', 'Hello world!', '<b>Hello world!</b>')
+sendEmail('howingyam0350@gmail.com', 'Hello from Nodemailer', 'Hello world!', '<b>Hello world!</b>')
 .then(info => {
   console.log('Email sent: ' + info.response);
 })
