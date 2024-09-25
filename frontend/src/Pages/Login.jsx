@@ -1,36 +1,18 @@
-import styled, { keyframes } from 'styled-components'
-import { useState } from 'react'
+import styled from 'styled-components'
+import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import Modal from '../Modal popup/Modal'
+import Modal from '../components/Modal popup/Modal'
+import { AuthContext } from '../contexts/AuthContext'
 
-const slideIn = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0); 
-  }
-`;
 
-const slideOut = keyframes`
-  0% {
-    opacity: 1;
-    transform: translateY(0); 
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(20px); 
-  }
-`;
+
 
 
 const Container = styled.div`
 width: 468px;
-height: 886px;
+height: 806px;
 outline: 3px solid black;
 display: flex;
 flex-direction: column;
@@ -38,7 +20,7 @@ align-items: center;
 justify-content: center;
 padding: 20px;
 border-radius: 50px;
-gap: 20px;
+gap: 10px;
 
 `
 const Header = styled.div`
@@ -79,6 +61,17 @@ button {
   border: none;
   padding: 10px;
   cursor: pointer;
+
+  &.loginButton {
+    font-size: 12px;
+    padding: 0px;
+    width: 50%;
+    height: 50%;
+    align-self: flex-end;
+    background-color: white;
+    color: black;
+    margin: -8px
+  }
 }
 
 button:disabled {
@@ -164,31 +157,20 @@ img {
 }
 `
 
-const ForgetPassword = styled.button`
-font-size: 13px;
-outline: none;
-border: none;
-padding: 20px;
-cursor: pointer;
-
-`
-
-
-
-// '登入失敗'
 
 const Login = () => {
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [login, setLogin] = useState(false)
+  const navigate = useNavigate();
+
+  const { setIsAuthenticated } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent form from submitting traditionally
+    e.preventDefault();
     if (!login) {
-      console.log("begin login")
       try {
         fetch('http://localhost:3000/api/login', {
           method: 'POST',
@@ -199,12 +181,19 @@ const Login = () => {
         })
           .then((res) => {
             if (res.ok) {
-              toast.success('登入成功');
+              return res.json();
+
             } else {
               res.json().then((res) => {
                 toast.error(res.error);
               });
             }
+          })
+          .then((data) => {
+            localStorage.setItem('token', data.token)
+            setIsAuthenticated(true);
+            toast.success('登入成功');
+            navigate('/profile');
           })
           .catch((error) => {
             console.error('Error:', error);
@@ -220,7 +209,6 @@ const Login = () => {
         toast.error('密碼不一致')
         return;
       }
-      console.log("begin register");
       try {
         fetch('http://localhost:3000/api/register', {
           method: 'POST',
@@ -292,61 +280,56 @@ const Login = () => {
   }
 
 
-
-
-
-
-
   return (
     <>
-    <Container>
-      <Header>
-        <img src="./loginIcon.png" alt="loginIcon" />
-        <h1>{login ? "用戶註冊" : "用戶登入"}</h1>
-        <p>填寫您的個人資訊</p>
-      </Header>
+      <Container>
+        <Header>
+          <img src="./loginIcon.png" alt="loginIcon" />
+          <h1>{login ? "用戶註冊" : "用戶登入"}</h1>
+          <p>填寫您的個人資訊</p>
+        </Header>
 
-      <InputForm onSubmit={handleSubmit}>
-        <InputDiv>
-          <input type="email" value={email} placeholder="電郵" onChange={(e) => setEmail(e.target.value)} required></input>
-          <img src="./email.png" alt="email" />
-        </InputDiv>
-        <InputDiv>
-          <input type="password" value={password} placeholder="密碼" onChange={(e) => setPassword(e.target.value)} required />
-          <img src="./password.png" alt="password" />
-        </InputDiv>
-        {login ? <InputDiv>
-          <input type="password" value={confirmPassword} placeholder="重新輸入密碼" onChange={(e) => setConfirmPassword(e.target.value)} />
-          <img src="./password.png" alt="password" />
-        </InputDiv> : <ForgetPassword type="button" onClick={()=>setShowModal(true)}>Forgot password</ForgetPassword>}
-        {login ? <TermsDiv >
-          <input type="checkbox" id="termsAndService" onChange={(e) => setTermsAccepted(e.target.checked)} />
-          <label htmlFor="termsAndService" style={{ fontSize: 13 }}>我已閱讀並同意條款</label>
-        </TermsDiv> : null}
-        <button type="submit" disabled={loginDisable()}>{login ? "註冊" : "登入"}</button>
-      </InputForm>
+        <InputForm onSubmit={handleSubmit}>
+          <InputDiv>
+            <input type="email" value={email} placeholder="電郵" onChange={(e) => setEmail(e.target.value)} required></input>
+            <img src="./email.png" alt="email" />
+          </InputDiv>
+          <InputDiv>
+            <input type="password" value={password} placeholder="密碼" onChange={(e) => setPassword(e.target.value)} required />
+            <img src="./password.png" alt="password" />
+          </InputDiv>
+          {login ? <InputDiv>
+            <input type="password" value={confirmPassword} placeholder="重新輸入密碼" onChange={(e) => setConfirmPassword(e.target.value)} />
+            <img src="./password.png" alt="password" />
+          </InputDiv> : <button className="loginButton" type="button" onClick={() => setShowModal(true)}>Forgot password</button>}
+          {login ? <TermsDiv >
+            <input type="checkbox" id="termsAndService" onChange={(e) => setTermsAccepted(e.target.checked)} />
+            <label htmlFor="termsAndService" style={{ fontSize: 13 }}>我已閱讀並同意條款</label>
+          </TermsDiv> : null}
+          <button type="submit" disabled={loginDisable()}>{login ? "註冊" : "登入"}</button>
+        </InputForm>
 
-      <ToLogin >已經有帳號了？<a href="#" style={{ fontWeight: 800, color: 'black' }} onClick={toggleLogin}>{login ? "登入" : "註冊"}</a></ToLogin>
-      <CustomLine></CustomLine>
+        <ToLogin >已經有帳號了？<a href="#" style={{ fontWeight: 800, color: 'black' }} onClick={toggleLogin}>{login ? "登入" : "註冊"}</a></ToLogin>
+        <CustomLine></CustomLine>
 
-      <ButtonDiv>
-        <button>使用 Google 登入</button>
-        <img src="./google.png" alt="" />
-      </ButtonDiv>
+        <ButtonDiv>
+          <button>使用 Google 登入</button>
+          <img src="./google.png" alt="" />
+        </ButtonDiv>
 
-      <ButtonDiv>
-        <button>使用 Facebook 登入</button>
-        <img src="./facebook.png" alt="" />
-      </ButtonDiv>
-    </Container>
-    {showModal && <Modal onClose={closeModal}>
-      <h2>Input your email</h2>
-      <form>
-      <input/>
-      <button onClick={()=>recoverPassword()}>recover</button>
-      </form>
-      
-      
+        <ButtonDiv>
+          <button>使用 Facebook 登入</button>
+          <img src="./facebook.png" alt="" />
+        </ButtonDiv>
+      </Container>
+      {showModal && <Modal onClose={closeModal}>
+        <h2>Input your email</h2>
+        <form>
+          <input />
+          <button onClick={() => recoverPassword()}>recover</button>
+        </form>
+
+
       </Modal>}
     </>
   )

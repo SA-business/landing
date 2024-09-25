@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import { NavLink } from 'react-router-dom'
+import { AuthContext } from '../../contexts/AuthContext'
 
 const Container = styled.div`
 width: 100%;
@@ -12,8 +13,18 @@ background-color: #ffffff;
 display: flex;
 justify-content: space-around;
 align-items: center;
+padding: 20px 0px;
 z-index: 100;
+
+.logOut {
 padding: 10px 20px;
+border-radius: 20px;
+background-color: #dac4c4;
+color: white;
+font-size: 20px;
+border: none;
+cursor: pointer;
+}
 `
 
 const LogoContainer = styled.div`
@@ -36,10 +47,11 @@ img {
 const NavItems = styled.ul`
 height: 100%;
 display: flex;
-justify-content: space-around;
+justify-content: center;
 align-items: center;
 gap: 20px;
 list-style: none;
+padding: 0px;
 `
 
 const NavItem = styled.li`
@@ -74,33 +86,37 @@ color: #000000;
 
 
 
-const Nav = () => {
 
-    const [highlight, setHightlight] = useState("")
-    const handleHighlight = (section) => {
-        setHighlight(section);
-      };
+const Nav = () => {
+    const { isAuthenticated } = useContext(AuthContext)
+
+    const handleLogout = () => {
+        localStorage.removeItem('token')
+        window.location.reload()
+        isAuthenticated = false
+    }
+
 
     return (
         <Container>
             <LogoContainer>
-                <img src='../../loginIcon.png'/>
+                <img src='../../loginIcon.png' />
                 <p>Internship</p>
             </LogoContainer>
 
             <NavItems>
-            <StyledNavLink to="/" activeclassname="active-link" onClick={()=> setHightlight("home")}
-            ><NavItem>Home</NavItem></StyledNavLink>
-            <StyledNavLink to="/about" activeclassname="active-link" onClick={()=> setHightlight("about")}
-            ><NavItem>About</NavItem></StyledNavLink>
-            <StyledNavLink to="/service" activeclassname="active-link" onClick={()=> setHightlight("service")}
-            ><NavItem>Service</NavItem></StyledNavLink>
-            <StyledNavLink to="/profile" activeclassname="active-link" onClick={()=> setHightlight("profile")}
-            ><NavItem>Profile</NavItem></StyledNavLink>
+                <StyledNavLink to="/" activeclassname="active-link"
+                ><NavItem>Home</NavItem></StyledNavLink>
+                <StyledNavLink to="/about" activeclassname="active-link"
+                ><NavItem>About</NavItem></StyledNavLink>
+                <StyledNavLink to="/service" activeclassname="active-link"
+                ><NavItem>Service</NavItem></StyledNavLink>
+                {isAuthenticated && <StyledNavLink to="/profile" activeclassname="active-link"
+                ><NavItem>Profile</NavItem></StyledNavLink>}
             </NavItems>
 
-            <StyledNavLink to="/login" activeclassname="active-link" onClick={()=> setHightlight("login")}><LoginButton>Login</LoginButton></StyledNavLink>
-            
+            {!isAuthenticated ? <StyledNavLink to="/login" activeclassname="active-link" ><LoginButton>Login</LoginButton></StyledNavLink> : <button className='logOut' onClick={handleLogout}>Logout</button>}
+
         </Container>
     )
 }

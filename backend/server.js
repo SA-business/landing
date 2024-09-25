@@ -113,8 +113,7 @@ app.get('/api/getProfile' , authenticateToken, async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        res.json({ name: user.name, email: user.email });
-
+        res.status(200).json({ name: user.name, email: user.email, id: user.id });
     }
     catch (err) {
         console.error('Failed to retrieve user:', err);
@@ -122,9 +121,6 @@ app.get('/api/getProfile' , authenticateToken, async (req, res) => {
     }
 }
 )
-
-
-
 
 app.get('*', (req, res) => {
     res.status(404).json({ error: 'Not found' });
