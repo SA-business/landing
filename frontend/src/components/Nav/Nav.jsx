@@ -83,10 +83,6 @@ color: #000000;
 }
 `
 
-
-
-
-
 const Nav = () => {
     const { isAuthenticated } = useContext(AuthContext)
 
@@ -95,7 +91,6 @@ const Nav = () => {
         window.location.reload()
         isAuthenticated = false
     }
-
 
     return (
         <Container>
