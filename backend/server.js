@@ -15,7 +15,6 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-//db connection
 let db;
 connectToDb((err) => {
     if (err) {
@@ -29,7 +28,7 @@ connectToDb((err) => {
     }
 });
 
-// sendEmail('howingyam0350@gmail.com', 'Hello from Nodemailer', 'Hello world!', '<b>Hello world!</b>')
+// sendEmail('howingyam0350@gmail.com', 'Hello ', 'Hello world!')
 // .then(info => {
 //   console.log('Email sent: ' + info.response);
 // })
@@ -85,6 +84,7 @@ app.post('/api/login', async (req, res) => {
             return res.status(400).json({ error: '用戶不存在或密碼不正確' });
         }
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+        console.log(token);
         res.json({ token, message: "登入成功" } );
     } catch (err) {
         console.error('Failed to retrieve users:', err);
@@ -99,12 +99,30 @@ app.post('/api/recover', async (req, res) => {
         if(!user){
             return res.json({message: "if this email exist, a password reset link has been sent."})
         }
+        sendEmail(email, 'Password Reset Request', 'Please click this link to reset your password: http://localhost:3000/reset/')
     }
     catch (err){
         console.error('failed to reset password:', err);
         res.status(500).json({ error: 'Internal server error'})
     }
 })
+
+app.get('/api/getProfile' , authenticateToken, async (req, res) => {
+    try {
+        const user = await db.collection('users').findOne({ id: req.user.id });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.json({ name: user.name, email: user.email });
+
+    }
+    catch (err) {
+        console.error('Failed to retrieve user:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+)
+
 
 
 
