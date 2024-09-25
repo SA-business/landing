@@ -280,11 +280,9 @@ const Login = () => {
       body: JSON.stringify({ email }),
     })
       .then((res) => {
-        if (res.ok) {
-          toast.success('請查看您的電郵');
-        } else {
+        if (res) {
           res.json().then((res) => {
-            toast.error(res.error);
+            toast.success(res.message);
           });
         }
       })
@@ -314,7 +312,7 @@ const Login = () => {
           <img src="./email.png" alt="email" />
         </InputDiv>
         <InputDiv>
-          <input type="password" value={password} placeholder="密碼" onChange={(e) => setPassword(e.target.value)} required min="8" />
+          <input type="password" value={password} placeholder="密碼" onChange={(e) => setPassword(e.target.value)} required />
           <img src="./password.png" alt="password" />
         </InputDiv>
         {login ? <InputDiv>
