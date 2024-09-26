@@ -176,7 +176,7 @@ const Login = () => {
   const [login, setLogin] = useState(false)
   const navigate = useNavigate();
 
-  const { setIsAuthenticated } = useContext(AuthContext);
+  const { setIsAuthenticated, user } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -204,6 +204,7 @@ const Login = () => {
             setIsAuthenticated(true);
             toast.success('登入成功');
             navigate('/profile');
+            console.log(user);
           })
           .catch((error) => {
             console.error('Error:', error);
@@ -313,16 +314,6 @@ const Login = () => {
             <img src="./password.png" alt="password" />
           </InputDiv> : <button className="loginButton" type="button" onClick={() => setShowModal(true)}>Forgot password</button>}
           {login ? <TermsDiv >
-            <div className='roleSelect'>
-              <>
-                <input type="radio" id="student" name="userType" value="student" />
-                <label htmlFor="student" style={{ fontSize: 13 }}>我是學生</label>
-              </>
-              <>
-                <input type="radio" id="employer" name="userType" value="employer" />
-                <label htmlFor="employer" style={{ fontSize: 13 }}>我是僱主</label>
-              </>
-            </div>
             <div>
               <input type="checkbox" id="termsAndService" onChange={(e) => setTermsAccepted(e.target.checked)} />
               <label htmlFor="termsAndService" style={{ fontSize: 13 }}>我已閱讀並同意條款</label>

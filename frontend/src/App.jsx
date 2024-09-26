@@ -10,21 +10,28 @@ import Notification from './components/notification/Notification'
 import ResetPassword from './Pages/ResetPassword'
 
 const Container = styled.div`
-width:100%;
+display: flex;
+justify-content: center;
+`
+
+const Wrapper = styled.div`
+width:1400px;
 height: 100vh;
 display: flex;
 justify-content: center;
 align-items: center;
-
-
+border-left: 1px solid black;
+border-right: 1px solid black;
 `
+
 const App = () => {
 
 
   return (
     <Router>
-      <Nav />
       <Container>
+      <Nav />
+      <Wrapper>
         <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
@@ -34,6 +41,7 @@ const App = () => {
         <Route path='/reset-password/:userId/:token' element={<ResetPassword />} />
         </Routes>
         <Notification />
+      </Wrapper>
       </Container>
     </Router>
   )

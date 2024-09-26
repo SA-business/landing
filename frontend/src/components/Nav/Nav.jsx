@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import styled from 'styled-components'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../../contexts/AuthContext'
+import { toast } from 'react-toastify'
 
 const Container = styled.div`
 width: 100%;
@@ -13,8 +14,9 @@ background-color: #ffffff;
 display: flex;
 justify-content: space-around;
 align-items: center;
-padding: 20px 0px;
+padding: 10px 0px;
 z-index: 100;
+border-bottom: 1px solid #000000;
 
 .logOut {
 padding: 10px 20px;
@@ -61,6 +63,7 @@ color: #000000;
 text-decoration: none;
 margin: 0 20px;
 cursor: pointer;
+color: #424242da;
 `
 
 const LoginButton = styled.button`
@@ -75,17 +78,42 @@ cursor: pointer;
 
 const StyledNavLink = styled(NavLink)`
 text-decoration: none;
-color: #000000;
 
 &.active {
-    background-color: #e0e0e0;
+    background-color: #e0e0e0a4;
     border-radius: 20px;
+    text-decoration: underline;
 }
+`
+
+const ProfileContainer = styled.div`
+border : 1px solid #000000;
+height: 100%;
+width: 400px;
+display: flex;
+justify-content: space-around;
+align-items: center;
+border-radius: 20px;
+
+img {
+    height: 50px;
+    width: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    background-color: #e4e4e489
+};
+
+p {
+    background-color: #cccccc84;
+    border-radius: 10px;
+    padding: 15px;
+}
+
 `
 
 const Nav = () => {
     const navigate = useNavigate()
-    let { isAuthenticated, setIsAuthenticated } = useContext(AuthContext)
+    let { isAuthenticated, setIsAuthenticated, user } = useContext(AuthContext)
 
     const handleLogout = () => {
         localStorage.removeItem('token')
@@ -108,11 +136,16 @@ const Nav = () => {
                 ><NavItem>About</NavItem></StyledNavLink>
                 <StyledNavLink to="/service" activeclassname="active-link"
                 ><NavItem>Service</NavItem></StyledNavLink>
-                {isAuthenticated && <StyledNavLink to="/profile" activeclassname="active-link"
-                ><NavItem>Profile</NavItem></StyledNavLink>}
+                <StyledNavLink to="/profile" activeclassname="active-link"
+                ><NavItem>Profile</NavItem></StyledNavLink>
             </NavItems>
 
-            {!isAuthenticated ? <StyledNavLink to="/login" activeclassname="active-link" ><LoginButton>Login</LoginButton></StyledNavLink> : <button className='logOut' onClick={handleLogout}>Logout</button>}
+            <ProfileContainer>
+                <img src="./public/defaultAvatar.png"></img>
+                <p> {user ? user.email : "訪客simcard"}</p>
+
+                {!isAuthenticated ? <StyledNavLink to="/login" activeclassname="active-link" ><LoginButton>Login</LoginButton></StyledNavLink> : <button className='logOut' onClick={handleLogout}>Logout</button>}
+            </ProfileContainer>
 
         </Container>
     )
