@@ -7,6 +7,7 @@ import Nav from './components/Nav/Nav'
 import Service from './Pages/Service'
 import About from './Pages/About'
 import Notification from './components/notification/Notification'
+import ResetPassword from './Pages/ResetPassword'
 
 const Container = styled.div`
 width:100%;
@@ -30,6 +31,7 @@ const App = () => {
         <Route path='/profile' element={<Profile />} />
         <Route path='/service' element={<Service />} />
         <Route path='/about' element={<About />} />
+        <Route path='/reset-password/:userId/:token' element={<ResetPassword />} />
         </Routes>
         <Notification />
       </Container>

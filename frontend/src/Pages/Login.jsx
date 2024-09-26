@@ -170,6 +170,7 @@ img {
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [resetEmail, setResetEmail] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [login, setLogin] = useState(false)
@@ -268,13 +269,14 @@ const Login = () => {
     setShowModal(false)
   }
 
-  const recoverPassword = () => {
+  const recoverPassword = (e) => {
+    e.preventDefault();
     fetch('http://localhost:3000/api/recover', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ resetEmail }),
     })
       .then((res) => {
         if (res) {
@@ -342,14 +344,13 @@ const Login = () => {
           <img src="./facebook.png" alt="" />
         </ButtonDiv>
       </Container>
+
       {showModal && <Modal onClose={closeModal}>
         <h2>Input your email</h2>
-        <form>
-          <input />
-          <button onClick={() => recoverPassword()}>recover</button>
+        <form onSubmit={recoverPassword}>
+          <input type="email" value={resetEmail} onChange={(e)=>setResetEmail(e.target.value)}/>
+          <button type="submit">recover</button>
         </form>
-
-
       </Modal>}
     </>
   )

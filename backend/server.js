@@ -62,7 +62,7 @@ app.post('/api/register', async (req, res) => {
         }
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const newUser = { email, hashedPassword, id: uuidv4() };
+        const newUser = { email, hashedPassword, id: uuidv4(), createdAt: new Date() };
         await db.collection('users').insertOne(newUser);
         res.status(201).json({ message: '用戶註冊成功' });
     }
@@ -84,7 +84,6 @@ app.post('/api/login', async (req, res) => {
             return res.status(400).json({ error: '用戶不存在或密碼不正確' });
         }
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
-        console.log(token);
         res.json({ token, message: "登入成功" } );
     } catch (err) {
         console.error('Failed to retrieve users:', err);
@@ -94,12 +93,23 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/api/recover', async (req, res) => {
     try{
-        const { email } = req.body;
+        const { resetEmail } = req.body;
+        console.log('recovering password for:', resetEmail);
+        let email = resetEmail;
         const user = await db.collection('users').findOne({email});
+        res.json({message: "if this email exist, a password reset link has been sent."})
         if(!user){
-            return res.json({message: "if this email exist, a password reset link has been sent."})
+            return 
         }
-        sendEmail(email, 'Password Reset Request', 'Please click this link to reset your password: http://localhost:3000/reset/')
+
+        const secret = process.env.JWT_SECRET + user.password;
+        const payload = { id: user._id, email: user.email };
+        const token = jwt.sign(payload, secret, { expiresIn: '30m' });
+
+        const resetUrl = `http://localhost:5173/reset-password/${user._id}/${token}`;
+
+        console.log('sending reset email')
+        sendEmail(user.email, 'Password Reset Request',  `Click the link to reset your password: ${resetUrl}`)
     }
     catch (err){
         console.error('failed to reset password:', err);

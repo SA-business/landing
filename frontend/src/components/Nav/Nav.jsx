@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../../contexts/AuthContext'
 
 const Container = styled.div`
@@ -84,12 +84,14 @@ color: #000000;
 `
 
 const Nav = () => {
-    const { isAuthenticated } = useContext(AuthContext)
+    const navigate = useNavigate()
+    let { isAuthenticated, setIsAuthenticated } = useContext(AuthContext)
 
     const handleLogout = () => {
         localStorage.removeItem('token')
-        window.location.reload()
-        isAuthenticated = false
+        setIsAuthenticated(false)
+        navigate('/')
+        toast.success('Logout successfully')
     }
 
     return (
