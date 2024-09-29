@@ -8,6 +8,7 @@ import Service from './Pages/Service'
 import About from './Pages/About'
 import Notification from './components/notification/Notification'
 import ResetPassword from './Pages/ResetPassword'
+import Emailverified from './Pages/Emailverified'
 
 const Container = styled.div`
 display: flex;
@@ -39,6 +40,7 @@ const App = () => {
         <Route path='/service' element={<Service />} />
         <Route path='/about' element={<About />} />
         <Route path='/reset-password/:userId/:token' element={<ResetPassword />} />
+        <Route path='/email-verified' element={<Emailverified/>}/>
         </Routes>
         <Notification />
       </Wrapper>

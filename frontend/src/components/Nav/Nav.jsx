@@ -21,8 +21,8 @@ border-bottom: 1px solid #000000;
 .logOut {
 padding: 10px 20px;
 border-radius: 20px;
-background-color: #dac4c4;
-color: white;
+background-color: #ff0505b0;
+color: #ffffff;
 font-size: 20px;
 border: none;
 cursor: pointer;
@@ -31,13 +31,17 @@ cursor: pointer;
 
 const LogoContainer = styled.div`
 display: flex;
+justify-content: center;
 align-items: center;
 gap: 30px;
 padding: 20px;
+flex: 1;
+cursor: pointer;
 
 p {
     font-size: 20px;
     color: #000000;
+    font-weight: bold;
 }
 
 img {
@@ -47,10 +51,11 @@ img {
 `
 
 const NavItems = styled.ul`
+flex: 3;
 height: 100%;
 display: flex;
 justify-content: center;
-align-items: center;
+align-items: center;;
 gap: 20px;
 list-style: none;
 padding: 0px;
@@ -58,12 +63,21 @@ padding: 0px;
 
 const NavItem = styled.li`
 padding: 20px;
-font-size: 20px;
+font-size: 15px;
 color: #000000;
 text-decoration: none;
 margin: 0 20px;
 cursor: pointer;
 color: #424242da;
+flex-direction: column;
+display: flex;
+align-items: center;
+
+img{
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+}
 `
 
 const LoginButton = styled.button`
@@ -87,17 +101,18 @@ text-decoration: none;
 `
 
 const ProfileContainer = styled.div`
+flex: 1;
 border : 1px solid #000000;
 height: 100%;
-width: 400px;
+max-width: 400px;
 display: flex;
 justify-content: space-around;
 align-items: center;
 border-radius: 20px;
 
 img {
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 40px;
     object-fit: cover;
     border-radius: 50%;
     background-color: #e4e4e489
@@ -106,38 +121,45 @@ img {
 p {
     background-color: #cccccc84;
     border-radius: 10px;
-    padding: 15px;
+    padding: 10px;
+    font-size: 12px;
+    
+}
+
+button {
+    color: black;
 }
 
 `
 
 const Nav = () => {
     const navigate = useNavigate()
-    let { isAuthenticated, setIsAuthenticated, user } = useContext(AuthContext)
+    let { isAuthenticated, setIsAuthenticated, user, logOut } = useContext(AuthContext)
 
     const handleLogout = () => {
-        localStorage.removeItem('token')
+        logOut()
         setIsAuthenticated(false)
+
         navigate('/')
         toast.success('Logout successfully')
     }
 
     return (
         <Container>
-            <LogoContainer>
+            <LogoContainer onClick={()=>navigate("/")}>
                 <img src='../../loginIcon.png' />
-                <p>Internship</p>
+                <p>Internship. Co LTD</p>
             </LogoContainer>
 
             <NavItems>
                 <StyledNavLink to="/" activeclassname="active-link"
-                ><NavItem>Home</NavItem></StyledNavLink>
+                ><NavItem><img src="./home.png"></img>Home</NavItem></StyledNavLink>
                 <StyledNavLink to="/about" activeclassname="active-link"
-                ><NavItem>About</NavItem></StyledNavLink>
+                ><NavItem><img src="./about.png"/>About</NavItem></StyledNavLink>
                 <StyledNavLink to="/service" activeclassname="active-link"
-                ><NavItem>Service</NavItem></StyledNavLink>
+                ><NavItem><img src="./service.png"/>Service</NavItem></StyledNavLink>
                 <StyledNavLink to="/profile" activeclassname="active-link"
-                ><NavItem>Profile</NavItem></StyledNavLink>
+                ><NavItem><img src="./profile.png"/>Profile</NavItem></StyledNavLink>
             </NavItems>
 
             <ProfileContainer>

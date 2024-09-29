@@ -15,15 +15,14 @@ const createTransporter = () => {
   });
 };
 
-const sendEmail = (to, subject, text, html) => {
+const sendEmail = (to, subject, text) => {
   const transporter = createTransporter();
 
   const mailOptions = {
     from: 'nathanho4321@gmail.com',
     to,
     subject,
-    text,
-    html
+    text
   };
 
   return transporter.sendMail(mailOptions);

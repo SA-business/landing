@@ -12,15 +12,15 @@ import { AuthContext } from '../contexts/AuthContext'
 
 const Container = styled.div`
 width: 468px;
-height: 806px;
-outline: 3px solid black;
+height: 606px;
 display: flex;
 flex-direction: column;
 align-items: center;
 justify-content: center;
 padding: 20px;
-border-radius: 50px;
 gap: 10px;
+border-radius: 9px;
+box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 
 `
 const Header = styled.div`
@@ -28,10 +28,6 @@ display: flex;
 flex-direction: column;
 align-items: center;
 gap: 10px;
-
-img {
-  height: 80px;
-}
 
 h1{
   margin: 0px;
@@ -53,7 +49,7 @@ width: 80%;
 
 button {
   width: 100%;
-  height: 60px;
+  height: 50px;
   border-radius: 20px;
   background-color: #070707;
   font-size: 20px;
@@ -65,7 +61,7 @@ button {
   &.loginButton {
     font-size: 12px;
     padding: 0px;
-    width: 50%;
+    width: 30%;
     height: 50%;
     align-self: flex-end;
     background-color: white;
@@ -96,8 +92,8 @@ const InputDiv = styled.div`
   }
 
   input {
-    height: 40px;
-    border-radius: 20px;
+    height: 35px;
+    border-radius: 10px;
     padding: 10px 10px 10px 50px;
     font-size: 20px;
    
@@ -126,6 +122,12 @@ display: flex;
 flex-direction: column;
 align-items: center;
 gap: 10px;
+
+p{
+  font-size: 12px;
+  text-align: center;
+  opacity: 0.7;
+}
 
 .roleSelect {
   display: flex;
@@ -171,12 +173,10 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [resetEmail, setResetEmail] = useState('');
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [login, setLogin] = useState(false)
   const navigate = useNavigate();
 
-  const { setIsAuthenticated, user } = useContext(AuthContext);
+  const { setIsAuthenticated, user, refreshUser } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -203,6 +203,7 @@ const Login = () => {
             localStorage.setItem('token', data.token)
             setIsAuthenticated(true);
             toast.success('登入成功');
+            refreshUser();
             navigate('/profile');
             console.log(user);
           })
@@ -215,11 +216,6 @@ const Login = () => {
 
     }
     else {
-      if (password !== confirmPassword) {
-        setPasswordMatch(false);
-        toast.error('密碼不一致')
-        return;
-      }
       try {
         fetch('http://localhost:3000/api/register', {
           method: 'POST',
@@ -230,7 +226,9 @@ const Login = () => {
         })
           .then((res) => {
             if (res.ok) {
-              toast.success('註冊成功');
+              res.json().then((res) => {
+              toast.success(res.message);
+              })
             } else {
               res.json().then((res) => {
                 toast.error(res.error);
@@ -254,7 +252,7 @@ const Login = () => {
     if (!login) {
       return !(email && password);
     } else {
-      return !(email && password && confirmPassword && termsAccepted);
+      return !(email && password);
     }
   };
 
@@ -262,7 +260,6 @@ const Login = () => {
     setLogin((prev) => !prev);
     setEmail('');
     setPassword('');
-    setConfirmPassword('');
   }
 
   const [showModal, setShowModal] = useState(false)
@@ -309,18 +306,13 @@ const Login = () => {
             <input type="password" value={password} placeholder="密碼" onChange={(e) => setPassword(e.target.value)} required />
             <img src="./password.png" alt="password" />
           </InputDiv>
-          {login ? <InputDiv>
-            <input type="password" value={confirmPassword} placeholder="重新輸入密碼" onChange={(e) => setConfirmPassword(e.target.value)} />
-            <img src="./password.png" alt="password" />
-          </InputDiv> : <button className="loginButton" type="button" onClick={() => setShowModal(true)}>Forgot password</button>}
-          {login ? <TermsDiv >
-            <div>
-              <input type="checkbox" id="termsAndService" onChange={(e) => setTermsAccepted(e.target.checked)} />
-              <label htmlFor="termsAndService" style={{ fontSize: 13 }}>我已閱讀並同意條款</label>
-            </div>
-          </TermsDiv> : null}
+          {!login ?  <button className="loginButton" type="button" onClick={() => setShowModal(true)}>Forgot password</button> : null}
+          
           <button type="submit" disabled={loginDisable()}>{login ? "註冊" : "登入"}</button>
         </InputForm>
+        {login ? <TermsDiv >
+              <p>「繼續」即代表您同意用戶協議、隱私權政策和 Cookie 政策。</p>
+          </TermsDiv> : null}
 
         <ToLogin >已經有帳號了？<a href="#" style={{ fontWeight: 800, color: 'black' }} onClick={toggleLogin}>{login ? "登入" : "註冊"}</a></ToLogin>
         <CustomLine></CustomLine>
